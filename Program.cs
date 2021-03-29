@@ -2,6 +2,7 @@
 using NLog.Web;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace BlogsConsole
 {
@@ -16,12 +17,16 @@ namespace BlogsConsole
  try
             {
                 var db = new BloggingContext();
+                string input;
 
+
+                do{
                 Console.WriteLine("1) Display all blogs.");
                 Console.WriteLine("2) Add a blog.");
                 Console.WriteLine("3) Create post.");
                 Console.WriteLine("4) Display posts.");
-                string input = Console.ReadLine();
+                Console.WriteLine("press any other key to quit.");
+                input = Console.ReadLine();
 
                 //display all blogs
                 if(input == "1")
@@ -53,6 +58,46 @@ namespace BlogsConsole
                 //create new post
                 if(input == "3")
                 {
+                var query = db.Blogs.OrderBy(b => b.Name);
+                foreach (var item in query)
+                {
+                    Console.WriteLine($"ID: {item.BlogId}) Name: {item.Name}");
+                }
+
+
+                    Console.WriteLine("Enter Name of the blog to post to");
+                    
+                    string Pto = Console.ReadLine();
+
+
+                    var exists = db.Blogs.Any(b => b.Name.Contains($"{Pto}"));
+
+                    if(exists == true)
+                    {
+
+                    var post = new Post();
+                    var BlogSearch = db.Blogs.Where(b => b.Name.Contains($"{Pto}"));
+                    List<Blog> blog = new List<Blog>(BlogSearch);
+                    var IdSearch = db.Blogs.Where(b => b.Name.Contains($"{Pto}")).Select(b => b.BlogId);
+                    List<int> Id = new List<int>(IdSearch);
+
+                    post.Blog = blog[0];
+                    post.BlogId = Id[0];
+                    
+                    Console.WriteLine("Please enter a title.");
+                    post.Title = Console.ReadLine();
+
+                    Console.WriteLine("Please enter the post content.");
+                    post.Content = Console.ReadLine();
+
+                    db.AddPost(post);
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("Blog not found");
+                    }
+
 
                 }
 
@@ -61,6 +106,7 @@ namespace BlogsConsole
                 {
 
                 }
+                }while(input == "1" || input == "2" || input == "3" || input == "4");
 
 
             }
