@@ -65,7 +65,7 @@ namespace BlogsConsole
                 }
 
 
-                    Console.WriteLine("Enter Name of the blog to post to");
+                    Console.WriteLine("Enter name of the blog to post to");
                     
                     string Pto = Console.ReadLine();
 
@@ -91,6 +91,7 @@ namespace BlogsConsole
                     post.Content = Console.ReadLine();
 
                     db.AddPost(post);
+                    logger.Info("Post Added");
                     }
 
                     else
@@ -104,6 +105,41 @@ namespace BlogsConsole
                 //display posts
                 if(input == "4")
                 {
+
+                var query = db.Blogs.OrderBy(b => b.Name);
+                foreach (var item in query)
+                {
+                    Console.WriteLine($"ID: {item.BlogId}) Name: {item.Name}");
+                }
+
+
+                    Console.WriteLine("Enter name of the blog to display posts from");
+                    
+                    string display = Console.ReadLine();
+
+
+                    var exists = db.Blogs.Any(b => b.Name.Contains($"{display}"));
+
+                    if(exists == true)
+                    {
+
+                    var IdSearch = db.Blogs.Where(b => b.Name.Contains($"{display}")).Select(b => b.BlogId);
+                    List<int> Id = new List<int>(IdSearch);
+                    int BlogId = Id[0];
+
+                        var Dposts = db.Posts.Where(b => b.BlogId.Equals(Id[0]));
+                        foreach (var item in Dposts)
+                        {
+                            Console.WriteLine($"Blog: {display} \nTitle: {item.Title} \nContent: {item.Content}");
+                        }
+
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("Blog not found");
+                    }
+
 
                 }
                 }while(input == "1" || input == "2" || input == "3" || input == "4");
