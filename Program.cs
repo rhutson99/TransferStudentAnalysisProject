@@ -127,6 +127,9 @@ namespace BlogsConsole
                     List<int> Id = new List<int>(IdSearch);
                     int BlogId = Id[0];
 
+                int count = db.Posts.Where(b => b.BlogId.Equals(Id[0])).Count();
+                Console.WriteLine($"{count} Posts in this Blog.");
+
                         var Dposts = db.Posts.Where(b => b.BlogId.Equals(Id[0]));
                         foreach (var item in Dposts)
                         {
